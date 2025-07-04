@@ -83,11 +83,11 @@ const ImportOrder = () => {
         return element?.textContent || null;
       };
 
-      // Corrected Logic based on your latest request:
-      // resellerName (e.g., "Gironi") takes value from CLI_1
-      // customerName (e.g., "Dimensione Bagno s.r.l.") takes value from RIF
-      const resellerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
-      const customerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
+      // *** CORREZIONE DELLA MAPPATURA ***
+      // Il campo "Rivenditore" nell'app deve prendere il valore da <RIF>
+      const resellerNameFromXml = getElementText(header, "RIF"); 
+      // Il campo "Cliente" nell'app deve prendere il valore da <CLI_1>
+      const customerNameFromXml = getElementText(header.querySelector("VAR"), "CLI_1"); 
 
       const orderNumber = getElementText(header, "NUMERO");
       const orderDate = getElementText(header, "DATA");
@@ -110,10 +110,10 @@ const ImportOrder = () => {
         }
       }
 
-      // resellerName is required, customerName can be null
-      if (!orderNumber || !formattedOrderDate || !orderType || !resellerName) {
+      // resellerName è richiesto, customerName può essere null
+      if (!orderNumber || !formattedOrderDate || !orderType || !resellerNameFromXml) {
         showError("Mancano dati essenziali nel file XML (Numero Ordine, Data, Tipo, Rivenditore).");
-        console.error("Missing essential data:", { orderNumber, formattedOrderDate, orderType, customerName, resellerName });
+        console.error("Missing essential data:", { orderNumber, formattedOrderDate, orderType, customerNameFromXml, resellerNameFromXml });
         return null;
       }
 
@@ -121,9 +121,9 @@ const ImportOrder = () => {
         order_number: orderNumber,
         order_date: formattedOrderDate,
         order_type: orderType,
-        customer_name: customerName,
+        customer_name: customerNameFromXml, // Assegna il valore da CLI_1 al campo customer_name
         customer_number: customerNumber,
-        reseller_name: resellerName,
+        reseller_name: resellerNameFromXml, // Assegna il valore da RIF al campo reseller_name
         reseller_code: resellerCode,
         project_name: projectName,
         designer: designer,
@@ -133,9 +133,9 @@ const ImportOrder = () => {
         order_number: orderNumber,
         order_date: formattedOrderDate,
         order_type: orderType,
-        customer_name: customerName,
+        customer_name: customerNameFromXml,
         customer_number: customerNumber,
-        reseller_name: resellerName,
+        reseller_name: resellerNameFromXml,
         reseller_code: resellerCode,
         project_name: projectName,
         designer: designer,

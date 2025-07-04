@@ -83,11 +83,11 @@ const ImportOrder = () => {
         return element?.textContent || null;
       };
 
-      // *** CORREZIONE DELLA MAPPATURA ***
-      // Il campo "Rivenditore" nell'app deve prendere il valore da <RIF>
-      const resellerNameFromXml = getElementText(header, "RIF"); 
-      // Il campo "Cliente" nell'app deve prendere il valore da <CLI_1>
-      const customerNameFromXml = getElementText(header.querySelector("VAR"), "CLI_1"); 
+      // *** CORREZIONE DELLA MAPPATURA FINALE ***
+      // Il campo "Rivenditore" nell'app deve prendere il valore da <CLI_1>
+      const resellerNameFromXml = getElementText(header.querySelector("VAR"), "CLI_1"); 
+      // Il campo "Cliente" nell'app deve prendere il valore da <RIF>
+      const customerNameFromXml = getElementText(header, "RIF"); 
 
       const orderNumber = getElementText(header, "NUMERO");
       const orderDate = getElementText(header, "DATA");
@@ -121,9 +121,9 @@ const ImportOrder = () => {
         order_number: orderNumber,
         order_date: formattedOrderDate,
         order_type: orderType,
-        customer_name: customerNameFromXml, // Assegna il valore da CLI_1 al campo customer_name
+        customer_name: customerNameFromXml, // Assegna il valore da RIF al campo customer_name
         customer_number: customerNumber,
-        reseller_name: resellerNameFromXml, // Assegna il valore da RIF al campo reseller_name
+        reseller_name: resellerNameFromXml, // Assegna il valore da CLI_1 al campo reseller_name
         reseller_code: resellerCode,
         project_name: projectName,
         designer: designer,

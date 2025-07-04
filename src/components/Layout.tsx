@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
-import { showError } from "@/utils/toast";
+import { showError, showSuccess } from "@/utils/toast"; // Importa showSuccess
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
@@ -21,8 +21,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      showError(`Errore durante il logout: ${error.message}`);
+      // Se l'errore è "Auth session missing!", consideralo un logout riuscito
+      if (error.message === "Auth session missing!") {
+        showSuccess('Disconnessione effettuata con successo!');
+        navigate('/login');
+      } else {
+        showError(`Errore durante il logout: ${error.message}`);
+      }
     } else {
+      showSuccess('Disconnessione effettuata con successo!');
       navigate('/login');
     }
   };

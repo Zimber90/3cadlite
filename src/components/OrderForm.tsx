@@ -136,7 +136,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data Ordine</FormLabel>
-              <FormControl> {/* FormControl wraps the Popover */}
+              <FormControl>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -147,14 +147,17 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                       )}
                       disabled={!canEdit}
                     >
-                      <span className="flex-1"> {/* Wrapped content in a span */}
-                        {field.value && !isNaN(field.value.getTime()) ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Seleziona una data</span>
-                        )}
-                      </span>
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      {/* Wrapped content in a single div */}
+                      <div className="flex items-center justify-between w-full">
+                        <span className="flex-1">
+                          {field.value && !isNaN(field.value.getTime()) ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Seleziona una data</span>
+                          )}
+                        </span>
+                        <CalendarIcon className="h-4 w-4 opacity-50" />
+                      </div>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">

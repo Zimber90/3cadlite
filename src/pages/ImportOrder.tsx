@@ -83,17 +83,15 @@ const ImportOrder = () => {
         return element?.textContent || null;
       };
 
-      // Extracting data based on the new XML structure and swapped logic
+      // Corrected Logic:
+      // CLI_1 (e.g., "Gironi") goes to customer_name
+      // RIF (e.g., "Dimensione Bagno s.r.l.") goes to reseller_name
+      const customerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
+      const resellerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
+
       const orderNumber = getElementText(header, "NUMERO");
       const orderDate = getElementText(header, "DATA");
       const orderType = getElementText(header, "TIPO"); // Assuming TIPO is OrderType
-
-      // SWAPPED LOGIC:
-      // CLI_1 (e.g., "Gironi") goes to reseller_name
-      // RIF (e.g., "Dimensione Bagno s.r.l.") goes to customer_name (can be null)
-      const resellerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
-      const customerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
-
       const customerNumber = getElementText(header, "CLIENTE"); // CLIENTE is direct child of TESTA
 
       // Not found in the provided snippet, setting to null for now
@@ -112,7 +110,7 @@ const ImportOrder = () => {
         }
       }
 
-      // Now, resellerName is required, customerName can be null
+      // resellerName is required, customerName can be null
       if (!orderNumber || !formattedOrderDate || !orderType || !resellerName) {
         showError("Mancano dati essenziali nel file XML (Numero Ordine, Data, Tipo, Rivenditore).");
         console.error("Missing essential data:", { orderNumber, formattedOrderDate, orderType, customerName, resellerName });

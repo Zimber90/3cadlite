@@ -127,7 +127,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* Campo Numero Ordine */}
+        {/* Campo Numero Ordine - Sempre disabilitato */}
         <FormField
           control={form.control}
           name="order_number"
@@ -135,7 +135,6 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             <FormItem>
               <FormLabel>Numero Ordine</FormLabel>
               <FormControl>
-                {/* Il numero d'ordine è disabilitato per la modifica */}
                 <Input placeholder="Numero dell'ordine" {...field} disabled={true} />
               </FormControl>
               <FormMessage />
@@ -143,7 +142,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           )}
         />
 
-        {/* Campo Data Ordine */}
+        {/* Campo Data Ordine - Sempre disabilitato */}
         <FormField
           control={form.control}
           name="order_date"
@@ -159,9 +158,8 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                         "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
                       )}
-                      disabled={!canEdit}
+                      disabled={true} {/* Sempre disabilitato */}
                     >
-                      {/* Contenuto del bottone: un singolo span che contiene testo e icona */}
                       <span className="flex items-center justify-between w-full">
                         <span className="flex-1">
                           {field.value && !isNaN(field.value.getTime()) ? (
@@ -178,7 +176,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                     <Calendar
                       mode="single"
                       selected={field.value || undefined}
-                      onSelect={canEdit ? field.onChange : undefined}
+                      onSelect={undefined} {/* Rimuovi onSelect per disabilitare la selezione */}
                       initialFocus
                     />
                   </PopoverContent>
@@ -189,7 +187,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           )}
         />
 
-        {/* Campo Nome Cliente */}
+        {/* Campo Nome Cliente - Sempre disabilitato */}
         <FormField
           control={form.control}
           name="customer_name"
@@ -197,14 +195,14 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             <FormItem>
               <FormLabel>Nome Cliente</FormLabel>
               <FormControl>
-                <Input placeholder="Nome del cliente" {...field} value={field.value || ""} disabled={!canEdit} />
+                <Input placeholder="Nome del cliente" {...field} value={field.value || ""} disabled={true} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Campo Numero Cliente */}
+        {/* Campo Numero Cliente - Sempre disabilitato */}
         <FormField
           control={form.control}
           name="customer_number"
@@ -212,14 +210,14 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             <FormItem>
               <FormLabel>Numero Cliente</FormLabel>
               <FormControl>
-                <Input placeholder="Numero del cliente" {...field} value={field.value || ""} disabled={!canEdit} />
+                <Input placeholder="Numero del cliente" {...field} value={field.value || ""} disabled={true} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Campo Nome Rivenditore */}
+        {/* Campo Nome Rivenditore - Sempre disabilitato */}
         <FormField
           control={form.control}
           name="reseller_name"
@@ -227,14 +225,14 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             <FormItem>
               <FormLabel>Nome Rivenditore</FormLabel>
               <FormControl>
-                <Input placeholder="Nome del rivenditore" {...field} disabled={!canEdit} />
+                <Input placeholder="Nome del rivenditore" {...field} disabled={true} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Campo Agente Assegnato */}
+        {/* Campo Agente Assegnato - Modificabile solo se canEdit è true */}
         <FormField
           control={form.control}
           name="agent_id"

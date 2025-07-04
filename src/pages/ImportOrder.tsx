@@ -83,11 +83,11 @@ const ImportOrder = () => {
         return element?.textContent || null;
       };
 
-      // Corrected Logic:
-      // CLI_1 (e.g., "Gironi") goes to customer_name
-      // RIF (e.g., "Dimensione Bagno s.r.l.") goes to reseller_name
-      const customerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
-      const resellerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
+      // Corrected Logic based on your latest request:
+      // resellerName (e.g., "Gironi") takes value from CLI_1
+      // customerName (e.g., "Dimensione Bagno s.r.l.") takes value from RIF
+      const resellerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
+      const customerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
 
       const orderNumber = getElementText(header, "NUMERO");
       const orderDate = getElementText(header, "DATA");

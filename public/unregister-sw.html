@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unregister Service Worker</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        h1 { color: #333; }
+        p { color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Disattivazione Service Worker...</h1>
+    <p>Attendere un momento. Questa pagina tenterà di disattivare tutti i Service Worker attivi per questo sito e pulire la cache.</p>
+    <p>Una volta completato, puoi chiudere questa pagina e riprovare l'app principale.</p>
+    <script>
+        if ('serviceWorker' in navigator) {
+            // Registra il Service Worker temporaneo che si disattiverà e pulirà le cache
+            navigator.serviceWorker.register('/unregister-sw.js').then(function(reg) {
+                console.log('Temporary Service Worker registered for unregistration:', reg.scope);
+            }).catch(function(error) {
+                console.error('Error registering temporary service worker:', error);
+            });
+
+            // Tenta anche di disattivare direttamente tutti i Service Worker esistenti
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let registration of registrations) {
+                    registration.unregister().then(function(success) {
+                        if (success) {
+                            console.log('Existing Service Worker unregistered directly:', registration.scope);
+                        } else {
+                            console.log('Failed to unregister existing Service Worker directly:', registration.scope);
+                        }
+                    });
+                }
+            }).then(function() {
+                console.log('All existing Service Workers unregistration attempts complete. You can now try reloading the main app.');
+            }).catch(function(error) {
+                console.error('Error getting/unregistering service workers:', error);
+            });
+        } else {
+            console.log('Service Workers are not supported in this browser.');
+        }
+    </script>
+</body>
+</html>

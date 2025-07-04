@@ -33,8 +33,10 @@ const ImportOrder = () => {
   };
 
   const parseXml = (xmlString: string): OrderData | null => {
+    console.log("--- Starting XML Parsing ---");
+    console.log("Raw XML string (first 500 chars):", xmlString.substring(0, 500) + "...");
+
     try {
-      console.log("Attempting to parse XML string (first 200 chars):", xmlString.substring(0, 200) + "...");
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlString, "text/xml");
 
@@ -43,26 +45,25 @@ const ImportOrder = () => {
       if (errorNode) {
         showError("Errore durante il parsing del file XML. Assicurati che sia un XML valido.");
         console.error("XML Parsing Error Node:", errorNode.textContent);
+        console.log("Full parsed document (if available):", xmlDoc.documentElement?.outerHTML);
         return null;
       }
 
-      // More robust check for successful XML parsing (e.g., if it was parsed as HTML)
-      if (xmlDoc.documentElement.nodeName === "html" || xmlDoc.documentElement.nodeName === "HTML") {
-        showError("Errore: Il file non è un XML valido o è stato interpretato come HTML.");
-        console.error("XML Parsing resulted in HTML document:", xmlDoc.documentElement.outerHTML);
+      // Get the root element directly
+      const rootElement = xmlDoc.documentElement;
+
+      // Check if the root element is indeed <Order>
+      if (!rootElement || rootElement.nodeName !== "Order") {
+        showError("Struttura XML non valida: L'elemento radice non è <Order>.");
+        console.error("Unexpected root element. Expected 'Order', got:", rootElement ? rootElement.nodeName : "null");
+        console.log("Root element outerHTML:", rootElement?.outerHTML);
         return null;
       }
 
-      console.log("Parsed XML document root element:", xmlDoc.documentElement.nodeName);
-      console.log("Parsed XML document outerHTML (first 500 chars):", xmlDoc.documentElement.outerHTML.substring(0, 500) + "...");
+      console.log("Found root element:", rootElement.nodeName);
+      console.log("Root element outerHTML (first 500 chars):", rootElement.outerHTML.substring(0, 500) + "...");
 
-      const orderElement = xmlDoc.querySelector("Order");
-      if (!orderElement) {
-        showError("Struttura XML non valida: Manca l'elemento <Order> radice.");
-        console.error("Missing <Order> element.");
-        return null;
-      }
-      console.log("Found <Order> element.");
+      const orderElement = rootElement; // Now orderElement is the rootElement
 
       const header = orderElement.querySelector("Header"); // Search within Order element
       if (!header) {
@@ -74,6 +75,7 @@ const ImportOrder = () => {
 
       const getElementText = (parent: Element | null, selector: string): string | null => {
         const element = parent?.querySelector(selector);
+        console.log(`Searching for ${selector} under ${parent?.nodeName || 'null'}. Found: ${element?.textContent || 'N/D'}`);
         return element?.textContent || null;
       };
 
@@ -93,6 +95,18 @@ const ImportOrder = () => {
         return null;
       }
 
+      console.log("Successfully parsed order data:", {
+        order_number: orderNumber,
+        order_date: orderDate,
+        order_type: orderType,
+        customer_name: customerName,
+        customer_number: customerNumber,
+        reseller_name: resellerName,
+        reseller_code: resellerCode,
+        project_name: projectName,
+        designer: designer,
+      });
+
       return {
         order_number: orderNumber,
         order_date: orderDate,
@@ -108,6 +122,8 @@ const ImportOrder = () => {
       showError(`Errore generico durante il parsing XML: ${error.message}`);
       console.error("Generic XML parsing error:", error);
       return null;
+    } finally {
+      console.log("--- Finished XML Parsing ---");
     }
   };
 

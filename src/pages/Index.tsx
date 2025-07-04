@@ -182,6 +182,7 @@ const Index = () => {
       </Card>
 
       <MadeWithDyad />
+      <p className="text-xs text-muted-foreground mt-4">Versione App: 1.0.1</p> {/* Nuovo indicatore di versione */}
     </div>
   );
 };

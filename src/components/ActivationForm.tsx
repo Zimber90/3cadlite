@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar"; // Corretto da '=>' a 'from'
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
-import { showSuccess, showError } => "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast"; // Corretto da '=>' a 'from'
 import { useAuth } from "@/contexts/SessionContext";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";

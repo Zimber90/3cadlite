@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } => "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar"; // Corretto da '=>' a 'from'
 import {
   Form,
   FormControl,
@@ -169,6 +169,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
+        {/* Campo Tipo Ordine rimosso */}
         <FormField
           control={form.control}
           name="customer_name"
@@ -208,6 +209,9 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
+        {/* Campo Codice Rivenditore rimosso */}
+        {/* Campo Nome Progetto rimosso */}
+        {/* Campo Designer rimosso */}
         <FormField
           control={form.control}
           name="agent_id"

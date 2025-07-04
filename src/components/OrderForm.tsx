@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 import { useAuth } from "@/contexts/SessionContext";
 
+// Definizione dello schema di validazione con Zod
 const formSchema = z.object({
   order_number: z.string().min(1, "Il numero d'ordine è richiesto."),
   order_date: z.date({ required_error: "La data dell'ordine è richiesta." }),
@@ -32,23 +33,27 @@ const formSchema = z.object({
   agent_id: z.string().nullable().optional(),
 });
 
+// Tipo per i valori del form
 type OrderFormValues = z.infer<typeof formSchema>;
 
+// Interfaccia per le props del componente
 interface OrderFormProps {
-  initialData?: OrderFormValues & { id: string };
+  initialData?: OrderFormValues & { id: string }; // Include 'id' per la modifica
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
+// Interfaccia per gli agenti
 interface Agent {
   id: string;
   name: string;
 }
 
 export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) {
-  const { canEdit } = useAuth();
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const { canEdit } = useAuth(); // Ottieni i permessi di modifica dall'hook di autenticazione
+  const [agents, setAgents] = useState<Agent[]>([]); // Stato per memorizzare gli agenti disponibili
 
+  // Inizializzazione del form con react-hook-form e Zod resolver
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -61,6 +66,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
     },
   });
 
+  // Effetto per caricare gli agenti dal database all'avvio del componente
   useEffect(() => {
     const fetchAgents = async () => {
       const { data, error } = await supabase
@@ -75,14 +81,16 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
       }
     };
     fetchAgents();
-  }, []);
+  }, []); // Dipendenza vuota per eseguire una sola volta al montaggio
 
+  // Funzione per gestire l'invio del form
   const onSubmit = async (values: OrderFormValues) => {
     if (!canEdit) {
       showError("Non hai i permessi per modificare gli ordini.");
       return;
     }
 
+    // Prepara i dati da salvare, formattando la data e gestendo l'agente nullo
     const dataToSave = {
       ...values,
       order_date: format(values.order_date, "yyyy-MM-dd"),
@@ -91,14 +99,16 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
 
     let error = null;
     if (initialData) {
-      // Ensure order_number is not updated if it's part of the update payload
+      // Se initialData è presente, stiamo modificando un ordine esistente
+      // L'order_number non deve essere modificabile, quindi lo escludiamo dall'update payload
       const { order_number, ...updatePayload } = dataToSave;
       const { error: updateError } = await supabase
         .from("orders")
-        .update(updatePayload) // Only update allowed fields
+        .update(updatePayload)
         .eq("id", initialData.id);
       error = updateError;
     } else {
+      // Altrimenti, stiamo inserendo un nuovo ordine
       const { error: insertError } = await supabase
         .from("orders")
         .insert(dataToSave);
@@ -109,14 +119,15 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
       showError(`Errore durante il salvataggio dell'ordine: ${error.message}`);
     } else {
       showSuccess(initialData ? "Ordine aggiornato con successo!" : "Ordine aggiunto con successo!");
-      form.reset();
-      onSuccess?.();
+      form.reset(); // Resetta il form dopo il successo
+      onSuccess?.(); // Chiama la callback di successo
     }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Campo Numero Ordine */}
         <FormField
           control={form.control}
           name="order_number"
@@ -124,12 +135,15 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             <FormItem>
               <FormLabel>Numero Ordine</FormLabel>
               <FormControl>
-                <Input placeholder="Numero dell'ordine" {...field} disabled={true} /> {/* Reso non modificabile */}
+                {/* Il numero d'ordine è disabilitato per la modifica */}
+                <Input placeholder="Numero dell'ordine" {...field} disabled={true} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Campo Data Ordine */}
         <FormField
           control={form.control}
           name="order_date"
@@ -141,9 +155,13 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
                       disabled={!canEdit}
                     >
+                      {/* Contenuto del bottone: un singolo span che contiene testo e icona */}
                       <span className="flex items-center justify-between w-full">
                         <span className="flex-1">
                           {field.value && !isNaN(field.value.getTime()) ? (
@@ -170,7 +188,8 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
-        {/* Campo Tipo Ordine rimosso */}
+
+        {/* Campo Nome Cliente */}
         <FormField
           control={form.control}
           name="customer_name"
@@ -184,6 +203,8 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
+
+        {/* Campo Numero Cliente */}
         <FormField
           control={form.control}
           name="customer_number"
@@ -197,6 +218,8 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
+
+        {/* Campo Nome Rivenditore */}
         <FormField
           control={form.control}
           name="reseller_name"
@@ -210,9 +233,8 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
-        {/* Campo Codice Rivenditore rimosso */}
-        {/* Campo Nome Progetto rimosso */}
-        {/* Campo Designer rimosso */}
+
+        {/* Campo Agente Assegnato */}
         <FormField
           control={form.control}
           name="agent_id"
@@ -242,6 +264,8 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
+
+        {/* Pulsanti di azione */}
         <div className="flex justify-end space-x-2">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>

@@ -39,9 +39,11 @@ interface Activation {
   activation_date: string | null;
   created_at: string;
   updated_at: string;
+  agent_id: string | null; // Nuovo campo
+  agents: { name: string } | null; // Per il join
 }
 
-type SortColumn = "reseller_name" | "request_date" | "link_sent_date" | "activation_date" | "created_at" | "updated_at";
+type SortColumn = "reseller_name" | "request_date" | "link_sent_date" | "activation_date" | "created_at" | "updated_at" | "agents.name";
 type SortDirection = "asc" | "desc";
 
 const Activations = () => {
@@ -59,7 +61,7 @@ const Activations = () => {
 
   // Stati per la paginazione
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Ora è uno stato modificabile
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
 
   // Stati per l'ordinamento
@@ -70,7 +72,7 @@ const Activations = () => {
 
   const fetchActivations = async () => {
     setLoading(true);
-    let query = supabase.from("activations").select("*", { count: "exact" });
+    let query = supabase.from("activations").select("*, agents(name)", { count: "exact" }); // Seleziona anche il nome dell'agente
 
     if (searchTerm) {
       query = query.ilike("reseller_name", `%${searchTerm}%`);
@@ -201,6 +203,7 @@ const Activations = () => {
                       request_date: new Date(editingActivation.request_date),
                       link_sent_date: editingActivation.link_sent_date ? new Date(editingActivation.link_sent_date) : null,
                       activation_date: editingActivation.activation_date ? new Date(editingActivation.activation_date) : null,
+                      agent_id: editingActivation.agent_id, // Passa l'ID dell'agente
                     } : undefined}
                     onSuccess={handleFormSuccess}
                     onCancel={handleFormCancel}
@@ -296,6 +299,14 @@ const Activations = () => {
                             )}
                           </div>
                         </TableHead>
+                        <TableHead className="px-2 sm:px-4 cursor-pointer" onClick={() => handleSort("agents.name")}>
+                          <div className="flex items-center">
+                            Agente
+                            {sortColumn === "agents.name" && (
+                              <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                            )}
+                          </div>
+                        </TableHead>
                         <TableHead className="px-2 sm:px-4 cursor-pointer" onClick={() => handleSort("request_date")}>
                           <div className="flex items-center">
                             Richiesta
@@ -327,6 +338,7 @@ const Activations = () => {
                       {activations.map((activation) => (
                         <TableRow key={activation.id}>
                           <TableCell className="font-medium px-2 sm:px-4">{activation.reseller_name}</TableCell>
+                          <TableCell className="px-2 sm:px-4">{activation.agents?.name || "N/D"}</TableCell>
                           <TableCell className="px-2 sm:px-4">{format(new Date(activation.request_date), "dd/MM/yyyy")}</TableCell>
                           <TableCell className="px-2 sm:px-4">
                             {activation.link_sent_date

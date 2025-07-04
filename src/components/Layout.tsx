@@ -1,12 +1,12 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { HomeIcon, UsersIcon, ListChecksIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react"; // Importa UserIcon
+import { HomeIcon, UsersIcon, ListChecksIcon, LogOutIcon, MenuIcon, UserIcon, BriefcaseIcon } from "lucide-react"; // Importa BriefcaseIcon
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
-import { showError, showSuccess } from "@/utils/toast"; // Importa showSuccess
+import { showError, showSuccess } from "@/utils/toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
@@ -21,7 +21,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      // Se l'errore è "Auth session missing!", consideralo un logout riuscito
       if (error.message === "Auth session missing!") {
         showSuccess('Disconnessione effettuata con successo!');
         navigate('/login');
@@ -53,14 +52,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Button>
       </Link>
       {isAdmin && (
-        <Link to="/users" className="w-full">
-          <Button variant="ghost" className="w-full justify-start text-lg px-4 py-2">
-            <UsersIcon className="mr-3 h-5 w-5" />
-            Utenti
-          </Button>
-        </Link>
+        <>
+          <Link to="/agents" className="w-full"> {/* Nuovo link agli agenti */}
+            <Button variant="ghost" className="w-full justify-start text-lg px-4 py-2">
+              <BriefcaseIcon className="mr-3 h-5 w-5" />
+              Agenti
+            </Button>
+          </Link>
+          <Link to="/users" className="w-full">
+            <Button variant="ghost" className="w-full justify-start text-lg px-4 py-2">
+              <UsersIcon className="mr-3 h-5 w-5" />
+              Utenti
+            </Button>
+          </Link>
+        </>
       )}
-      <Link to="/profile" className="w-full"> {/* Nuovo link al profilo */}
+      <Link to="/profile" className="w-full">
         <Button variant="ghost" className="w-full justify-start text-lg px-4 py-2">
           <UserIcon className="mr-3 h-5 w-5" />
           Il Mio Profilo
@@ -118,7 +125,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </SheetContent>
             </Sheet>
             <h1 className="text-xl font-bold">3cadliteDB</h1>
-            <ThemeToggle /> {/* Theme toggle on mobile header */}
+            <ThemeToggle />
           </header>
         )}
         <div className="flex-1 overflow-auto">

@@ -8,7 +8,8 @@ import NotFound from "./pages/NotFound";
 import Activations from "./pages/Activations";
 import Login from "./pages/Login";
 import Users from "./pages/Users";
-import Profile from "./pages/Profile"; // Importa la nuova pagina Profile
+import Profile from "./pages/Profile";
+import Agents from "./pages/Agents"; // Importa la nuova pagina Agents
 import { SessionContextProvider, useAuth } from "./contexts/SessionContext";
 import Layout from "./components/Layout";
 
@@ -49,7 +50,8 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/activations" element={<ProtectedRoute><Activations /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute adminOnly={true}><Users /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Nuova rotta per il profilo */}
+            <Route path="/agents" element={<ProtectedRoute adminOnly={true}><Agents /></ProtectedRoute>} /> {/* Nuova rotta per gli agenti */}
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

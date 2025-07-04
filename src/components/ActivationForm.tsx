@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import React, { useState, useEffect } from "react"; // Importa useState e useEffect
+import React, { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,14 +21,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 import { useAuth } from "@/contexts/SessionContext";
-import { Switch } from "@/components/ui/switch"; // Importa Switch
-import { Label } from "@/components/ui/label"; // Importa Label
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Importa Select
 
 const formSchema = z.object({
   reseller_name: z.string().min(1, "Il nome del rivenditore è richiesto."),
   request_date: z.date({ required_error: "La data della richiesta è richiesta." }),
   link_sent_date: z.date().nullable().optional(),
   activation_date: z.date().nullable().optional(),
+  agent_id: z.string().nullable().optional(), // Nuovo campo per l'ID dell'agente
 });
 
 type ActivationFormValues = z.infer<typeof formSchema>;
@@ -39,8 +41,14 @@ interface ActivationFormProps {
   onCancel?: () => void;
 }
 
+interface Agent {
+  id: string;
+  name: string;
+}
+
 export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationFormProps) {
   const { canEdit } = useAuth();
+  const [agents, setAgents] = useState<Agent[]>([]); // Stato per gli agenti
   const form = useForm<ActivationFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -48,6 +56,7 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
       request_date: new Date(),
       link_sent_date: null,
       activation_date: null,
+      agent_id: null, // Default a null
     },
   });
 
@@ -61,6 +70,23 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
     }
   }, [isNotYetActive, form]);
 
+  // Carica gli agenti disponibili all'avvio del componente
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const { data, error } = await supabase
+        .from("agents")
+        .select("id, name")
+        .order("name", { ascending: true });
+
+      if (error) {
+        showError(`Errore nel caricamento degli agenti: ${error.message}`);
+      } else {
+        setAgents(data || []);
+      }
+    };
+    fetchAgents();
+  }, []);
+
   const onSubmit = async (values: ActivationFormValues) => {
     if (!canEdit) {
       showError("Non hai i permessi per modificare le attivazioni.");
@@ -70,8 +96,8 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
       ...values,
       request_date: format(values.request_date, "yyyy-MM-dd"),
       link_sent_date: values.link_sent_date ? format(values.link_sent_date, "yyyy-MM-dd") : null,
-      // Se isNotYetActive è true, activation_date sarà null, altrimenti usa il valore del form
       activation_date: isNotYetActive ? null : (values.activation_date ? format(values.activation_date, "yyyy-MM-dd") : null),
+      agent_id: values.agent_id || null, // Assicurati che sia null se non selezionato
     };
 
     let error = null;
@@ -112,6 +138,31 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
               <FormControl>
                 <Input placeholder="Nome del rivenditore" {...field} disabled={!canEdit} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="agent_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Agente Assegnato</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value || ""} disabled={!canEdit}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona un agente" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="">Nessun Agente</SelectItem> {/* Opzione per nessun agente */}
+                  {agents.map((agent) => (
+                    <SelectItem key={agent.id} value={agent.id}>
+                      {agent.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -207,7 +258,7 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                   onCheckedChange={(checked) => {
                     setIsNotYetActive(checked);
                     if (checked) {
-                      form.setValue('activation_date', null); // Imposta a null se "Non ancora attivo"
+                      form.setValue('activation_date', null);
                     }
                   }}
                   disabled={!canEdit}

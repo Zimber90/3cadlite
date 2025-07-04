@@ -97,7 +97,7 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
       request_date: format(values.request_date, "yyyy-MM-dd"),
       link_sent_date: values.link_sent_date ? format(values.link_sent_date, "yyyy-MM-dd") : null,
       activation_date: isNotYetActive ? null : (values.activation_date ? format(values.activation_date, "yyyy-MM-dd") : null),
-      agent_id: values.agent_id || null, // Assicurati che sia null se non selezionato
+      agent_id: values.agent_id === "none" ? null : values.agent_id, // Converti "none" in null
     };
 
     let error = null;
@@ -148,14 +148,18 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
           render={({ field }) => (
             <FormItem>
               <FormLabel>Agente Assegnato</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value || ""} disabled={!canEdit}>
+              <Select
+                onValueChange={(value) => field.onChange(value === "none" ? null : value)} // Converti "none" in null
+                defaultValue={field.value || "none"} // Imposta "none" come default se il valore è null
+                disabled={!canEdit}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleziona un agente" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">Nessun Agente</SelectItem> {/* Opzione per nessun agente */}
+                  <SelectItem value="none">Nessun Agente</SelectItem> {/* Valore "none" */}
                   {agents.map((agent) => (
                     <SelectItem key={agent.id} value={agent.id}>
                       {agent.name}

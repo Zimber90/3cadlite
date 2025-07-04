@@ -1,4 +1,4 @@
-const CACHE_NAME = '3cadlite-static-v3'; // Cambiato il nome della cache a v3
+const CACHE_NAME = '3cadlite-static-v4'; // Cambiato il nome della cache a v4
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,11 +9,11 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing v3...');
+  console.log('[Service Worker] Installing v4...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[Service Worker] Caching app shell v3');
+        console.log('[Service Worker] Caching app shell v4');
         return cache.addAll(urlsToCache);
       })
       .then(() => self.skipWaiting()) // Forza l'attivazione del nuovo Service Worker
@@ -37,7 +37,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating v3...');
+  console.log('[Service Worker] Activating v4...');
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {

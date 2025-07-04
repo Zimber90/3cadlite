@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
+import { toast } from "sonner"; // Importa toast da sonner
 
 // Registra il Service Worker
 if ('serviceWorker' in navigator) {
@@ -17,9 +18,15 @@ if ('serviceWorker' in navigator) {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // Nuovo Service Worker installato e pronto per l'attivazione
-                // Forziamo un ricaricamento della pagina per usare il nuovo SW
-                console.log('New Service Worker installed. Reloading page...');
-                window.location.reload();
+                // Notifica l'utente che è disponibile un aggiornamento
+                console.log('New Service Worker installed. Prompting user to refresh...');
+                toast.info("È disponibile una nuova versione dell'app!", {
+                  action: {
+                    label: "Aggiorna",
+                    onClick: () => window.location.reload(true), // Ricarica forzando la cache
+                  },
+                  duration: Infinity, // Mostra la notifica finché l'utente non agisce
+                });
               }
             });
           }

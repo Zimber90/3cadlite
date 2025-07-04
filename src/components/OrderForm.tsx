@@ -26,13 +26,9 @@ import { useAuth } from "@/contexts/SessionContext";
 const formSchema = z.object({
   order_number: z.string().min(1, "Il numero d'ordine è richiesto."),
   order_date: z.date({ required_error: "La data dell'ordine è richiesta." }),
-  order_type: z.string().nullable().optional(),
-  customer_name: z.string().nullable().optional(), // Reso nullable e opzionale
+  customer_name: z.string().nullable().optional(),
   customer_number: z.string().nullable().optional(),
-  reseller_name: z.string().min(1, "Il nome del rivenditore è richiesto."), // Rimane richiesto
-  reseller_code: z.string().nullable().optional(),
-  project_name: z.string().nullable().optional(),
-  designer: z.string().nullable().optional(),
+  reseller_name: z.string().min(1, "Il nome del rivenditore è richiesto."),
   agent_id: z.string().nullable().optional(),
 });
 
@@ -58,13 +54,9 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
     defaultValues: initialData || {
       order_number: "",
       order_date: new Date(),
-      order_type: null,
-      customer_name: null, // Default a null
+      customer_name: null,
       customer_number: null,
       reseller_name: "",
-      reseller_code: null,
-      project_name: null,
-      designer: null,
       agent_id: null,
     },
   });
@@ -99,9 +91,11 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
 
     let error = null;
     if (initialData) {
+      // Ensure order_number is not updated if it's part of the update payload
+      const { order_number, ...updatePayload } = dataToSave;
       const { error: updateError } = await supabase
         .from("orders")
-        .update(dataToSave)
+        .update(updatePayload) // Only update allowed fields
         .eq("id", initialData.id);
       error = updateError;
     } else {
@@ -130,7 +124,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             <FormItem>
               <FormLabel>Numero Ordine</FormLabel>
               <FormControl>
-                <Input placeholder="Numero dell'ordine" {...field} disabled={!canEdit} />
+                <Input placeholder="Numero dell'ordine" {...field} disabled={true} /> {/* Reso non modificabile */}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -175,25 +169,13 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="order_type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tipo Ordine</FormLabel>
-              <FormControl>
-                <Input placeholder="Tipo di ordine" {...field} value={field.value || ""} disabled={!canEdit} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Campo Tipo Ordine rimosso */}
         <FormField
           control={form.control}
           name="customer_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome Cliente</FormLabel> {/* Etichetta per il campo cliente */}
+              <FormLabel>Nome Cliente</FormLabel>
               <FormControl>
                 <Input placeholder="Nome del cliente" {...field} value={field.value || ""} disabled={!canEdit} />
               </FormControl>
@@ -219,7 +201,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           name="reseller_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome Rivenditore</FormLabel> {/* Etichetta per il campo rivenditore */}
+              <FormLabel>Nome Rivenditore</FormLabel>
               <FormControl>
                 <Input placeholder="Nome del rivenditore" {...field} disabled={!canEdit} />
               </FormControl>
@@ -227,45 +209,9 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="reseller_code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Codice Rivenditore</FormLabel>
-              <FormControl>
-                <Input placeholder="Codice del rivenditore" {...field} value={field.value || ""} disabled={!canEdit} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="project_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome Progetto</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome del progetto" {...field} value={field.value || ""} disabled={!canEdit} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="designer"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Designer</FormLabel>
-              <FormControl>
-                <Input placeholder="Nome del designer" {...field} value={field.value || ""} disabled={!canEdit} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Campo Codice Rivenditore rimosso */}
+        {/* Campo Nome Progetto rimosso */}
+        {/* Campo Designer rimosso */}
         <FormField
           control={form.control}
           name="agent_id"

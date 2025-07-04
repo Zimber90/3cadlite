@@ -147,17 +147,17 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                       )}
                       disabled={!canEdit}
                     >
-                      {/* Wrapped content in a single div */}
-                      <div className="flex items-center justify-between w-full">
+                      {/* Ensure this is always a single root element */}
+                      <span className="flex items-center justify-between w-full">
                         <span className="flex-1">
                           {field.value && !isNaN(field.value.getTime()) ? (
                             format(field.value, "PPP")
                           ) : (
-                            <span>Seleziona una data</span>
+                            "Seleziona una data" // Changed to string literal
                           )}
                         </span>
                         <CalendarIcon className="h-4 w-4 opacity-50" />
-                      </div>
+                      </span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">

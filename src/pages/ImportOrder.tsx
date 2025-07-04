@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpIcon, Loader2 } from "lucide-react";
-import { showSuccess, showError } from "@/utils/toast";
+import { showSuccess, showError } => "@/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/SessionContext";
 
@@ -56,11 +56,10 @@ const ImportOrder = () => {
       console.log("Parsed XML document root element nodeName:", rootElement?.nodeName);
       console.log("Parsed XML document root element outerHTML (first 500 chars):", rootElement?.outerHTML.substring(0, 500) + "...");
 
-
-      // Check if the root element is indeed <Order>
-      if (!rootElement || rootElement.nodeName !== "Order") {
-        showError("Struttura XML non valida: L'elemento radice non è <Order>.");
-        console.error("Unexpected root element. Expected 'Order', got:", rootElement ? rootElement.nodeName : "null");
+      // Check if the root element is indeed <ORDINE>
+      if (!rootElement || rootElement.nodeName !== "ORDINE") {
+        showError("Struttura XML non valida: L'elemento radice non è <ORDINE>.");
+        console.error("Unexpected root element. Expected 'ORDINE', got:", rootElement ? rootElement.nodeName : "null");
         console.log("Root element outerHTML:", rootElement?.outerHTML);
         return null;
       }
@@ -68,15 +67,15 @@ const ImportOrder = () => {
       console.log("Found root element:", rootElement.nodeName);
       console.log("Root element outerHTML (first 500 chars):", rootElement.outerHTML.substring(0, 500) + "...");
 
-      const orderElement = rootElement; // Now orderElement is the rootElement
+      const orderElement = rootElement; // ORDINE is the root element
 
-      const header = orderElement.querySelector("Header"); // Search within Order element
+      const header = orderElement.querySelector("TESTA"); // Search for TESTA within ORDINE
       if (!header) {
-        showError("Struttura XML non valida: Manca l'elemento <Header>.");
-        console.error("Missing <Header> element within <Order>.");
+        showError("Struttura XML non valida: Manca l'elemento <TESTA>.");
+        console.error("Missing <TESTA> element within <ORDINE>.");
         return null;
       }
-      console.log("Found <Header> element.");
+      console.log("Found <TESTA> element.");
 
       const getElementText = (parent: Element | null, selector: string): string | null => {
         const element = parent?.querySelector(selector);
@@ -84,25 +83,43 @@ const ImportOrder = () => {
         return element?.textContent || null;
       };
 
-      const orderNumber = getElementText(header, "OrderNumber");
-      const orderDate = getElementText(header, "OrderDate");
-      const orderType = getElementText(header, "OrderType");
-      const customerName = getElementText(header.querySelector("Customer"), "CustomerName");
-      const customerNumber = getElementText(header.querySelector("Customer"), "CustomerNumber");
-      const resellerName = getElementText(header.querySelector("Reseller"), "ResellerName");
-      const resellerCode = getElementText(header.querySelector("Reseller"), "ResellerCode");
-      const projectName = getElementText(header.querySelector("ProjectInfo"), "ProjectName");
-      const designer = getElementText(header.querySelector("ProjectInfo"), "Designer");
+      // Extracting data based on the new XML structure
+      const orderNumber = getElementText(header, "NUMERO");
+      const orderDate = getElementText(header, "DATA");
+      const orderType = getElementText(header, "TIPO"); // Assuming TIPO is OrderType
 
-      if (!orderNumber || !orderDate || !orderType || !customerName || !resellerName) {
+      // Customer details
+      const customerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
+      const customerNumber = getElementText(header, "CLIENTE"); // CLIENTE is direct child of TESTA
+
+      // Reseller details
+      const resellerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
+      const resellerCode = null; // Not found in the provided snippet, setting to null for now
+
+      // Project details
+      const projectName = null; // Not found in the provided snippet, setting to null for now
+      const designer = null; // Not found in the provided snippet, setting to null for now
+
+      // Date format in XML is "DD/MM/YYYY", but DB expects "YYYY-MM-DD"
+      let formattedOrderDate = null;
+      if (orderDate) {
+        const parts = orderDate.split('/');
+        if (parts.length === 3) {
+          formattedOrderDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        } else {
+          console.warn("OrderDate format unexpected:", orderDate);
+        }
+      }
+
+      if (!orderNumber || !formattedOrderDate || !orderType || !customerName || !resellerName) {
         showError("Mancano dati essenziali nel file XML (Numero Ordine, Data, Tipo, Cliente, Rivenditore).");
-        console.error("Missing essential data:", { orderNumber, orderDate, orderType, customerName, resellerName });
+        console.error("Missing essential data:", { orderNumber, formattedOrderDate, orderType, customerName, resellerName });
         return null;
       }
 
       console.log("Successfully parsed order data:", {
         order_number: orderNumber,
-        order_date: orderDate,
+        order_date: formattedOrderDate,
         order_type: orderType,
         customer_name: customerName,
         customer_number: customerNumber,
@@ -114,7 +131,7 @@ const ImportOrder = () => {
 
       return {
         order_number: orderNumber,
-        order_date: orderDate,
+        order_date: formattedOrderDate,
         order_type: orderType,
         customer_name: customerName,
         customer_number: customerNumber,

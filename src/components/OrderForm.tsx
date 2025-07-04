@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } => "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -136,9 +136,9 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data Ordine</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
+              <FormControl> {/* FormControl wraps the Popover */}
+                <Popover>
+                  <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
                       className={cn(
@@ -154,22 +154,21 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value || undefined}
-                    onSelect={canEdit ? field.onChange : undefined}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value || undefined}
+                      onSelect={canEdit ? field.onChange : undefined}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {/* Campo Tipo Ordine rimosso */}
         <FormField
           control={form.control}
           name="customer_name"
@@ -209,9 +208,6 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
             </FormItem>
           )}
         />
-        {/* Campo Codice Rivenditore rimosso */}
-        {/* Campo Nome Progetto rimosso */}
-        {/* Campo Designer rimosso */}
         <FormField
           control={form.control}
           name="agent_id"

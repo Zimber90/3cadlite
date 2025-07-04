@@ -177,9 +177,9 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data Richiesta</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
+              <FormControl> {/* FormControl wraps the Popover */}
+                <Popover>
+                  <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
                       className={cn(
@@ -195,17 +195,17 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value || undefined}
-                    onSelect={canEdit ? field.onChange : undefined}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value || undefined}
+                      onSelect={canEdit ? field.onChange : undefined}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -216,9 +216,9 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data Invio Link</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
+              <FormControl> {/* FormControl wraps the Popover */}
+                <Popover>
+                  <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
                       className={cn(
@@ -234,17 +234,17 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value || undefined}
-                    onSelect={canEdit ? field.onChange : undefined}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value || undefined}
+                      onSelect={canEdit ? field.onChange : undefined}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -274,9 +274,9 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                   NON ANCORA ATTIVO
                 </div>
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
+                <FormControl> {/* FormControl wraps the Popover */}
+                  <Popover>
+                    <PopoverTrigger asChild>
                       <Button
                         variant={"outline"}
                         className={cn(
@@ -292,17 +292,17 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                         )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value || undefined}
-                      onSelect={canEdit ? field.onChange : undefined}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value || undefined}
+                        onSelect={canEdit ? field.onChange : undefined}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
               )}
               <FormMessage />
             </FormItem>

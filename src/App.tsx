@@ -9,7 +9,8 @@ import Activations from "./pages/Activations";
 import Login from "./pages/Login";
 import Users from "./pages/Users";
 import Profile from "./pages/Profile";
-import Agents from "./pages/Agents"; // Importa la nuova pagina Agents
+import Agents from "./pages/Agents";
+import ImportOrder from "./pages/ImportOrder"; // Importa la nuova pagina ImportOrder
 import { SessionContextProvider, useAuth } from "./contexts/SessionContext";
 import Layout from "./components/Layout";
 
@@ -50,7 +51,8 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/activations" element={<ProtectedRoute><Activations /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute adminOnly={true}><Users /></ProtectedRoute>} />
-            <Route path="/agents" element={<ProtectedRoute adminOnly={true}><Agents /></ProtectedRoute>} /> {/* Nuova rotta per gli agenti */}
+            <Route path="/agents" element={<ProtectedRoute adminOnly={true}><Agents /></ProtectedRoute>} />
+            <Route path="/import-order" element={<ProtectedRoute adminOnly={true}><ImportOrder /></ProtectedRoute>} /> {/* Nuova rotta per l'importazione ordini */}
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

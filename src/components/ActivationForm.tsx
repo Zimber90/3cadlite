@@ -188,11 +188,13 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                       )}
                       disabled={!canEdit}
                     >
-                      {field.value && !isNaN(field.value.getTime()) ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Seleziona una data</span>
-                      )}
+                      <span className="flex-1"> {/* Wrapped content in a span */}
+                        {field.value && !isNaN(field.value.getTime()) ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Seleziona una data</span>
+                        )}
+                      </span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -227,11 +229,13 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                       )}
                       disabled={!canEdit}
                     >
-                      {field.value && !isNaN(field.value.getTime()) ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Seleziona una data</span>
-                      )}
+                      <span className="flex-1"> {/* Wrapped content in a span */}
+                        {field.value && !isNaN(field.value.getTime()) ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Seleziona una data</span>
+                        )}
+                      </span>
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -285,11 +289,13 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                         )}
                         disabled={!canEdit}
                       >
-                        {field.value && !isNaN(field.value.getTime()) ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Seleziona una data</span>
-                        )}
+                        <span className="flex-1"> {/* Wrapped content in a span */}
+                          {field.value && !isNaN(field.value.getTime()) ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Seleziona una data</span>
+                          )}
+                        </span>
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </PopoverTrigger>

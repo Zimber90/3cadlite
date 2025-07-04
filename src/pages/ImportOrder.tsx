@@ -34,6 +34,7 @@ const ImportOrder = () => {
 
   const parseXml = (xmlString: string): OrderData | null => {
     try {
+      console.log("Attempting to parse XML string (first 200 chars):", xmlString.substring(0, 200) + "...");
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlString, "text/xml");
 
@@ -41,20 +42,40 @@ const ImportOrder = () => {
       const errorNode = xmlDoc.querySelector("parsererror");
       if (errorNode) {
         showError("Errore durante il parsing del file XML. Assicurati che sia un XML valido.");
-        console.error("XML Parsing Error:", errorNode.textContent);
+        console.error("XML Parsing Error Node:", errorNode.textContent);
         return null;
       }
+
+      // More robust check for successful XML parsing (e.g., if it was parsed as HTML)
+      if (xmlDoc.documentElement.nodeName === "html" || xmlDoc.documentElement.nodeName === "HTML") {
+        showError("Errore: Il file non è un XML valido o è stato interpretato come HTML.");
+        console.error("XML Parsing resulted in HTML document:", xmlDoc.documentElement.outerHTML);
+        return null;
+      }
+
+      console.log("Parsed XML document root element:", xmlDoc.documentElement.nodeName);
+      console.log("Parsed XML document outerHTML (first 500 chars):", xmlDoc.documentElement.outerHTML.substring(0, 500) + "...");
+
+      const orderElement = xmlDoc.querySelector("Order");
+      if (!orderElement) {
+        showError("Struttura XML non valida: Manca l'elemento <Order> radice.");
+        console.error("Missing <Order> element.");
+        return null;
+      }
+      console.log("Found <Order> element.");
+
+      const header = orderElement.querySelector("Header"); // Search within Order element
+      if (!header) {
+        showError("Struttura XML non valida: Manca l'elemento <Header>.");
+        console.error("Missing <Header> element within <Order>.");
+        return null;
+      }
+      console.log("Found <Header> element.");
 
       const getElementText = (parent: Element | null, selector: string): string | null => {
         const element = parent?.querySelector(selector);
         return element?.textContent || null;
       };
-
-      const header = xmlDoc.querySelector("Order > Header");
-      if (!header) {
-        showError("Struttura XML non valida: Manca l'elemento <Header>.");
-        return null;
-      }
 
       const orderNumber = getElementText(header, "OrderNumber");
       const orderDate = getElementText(header, "OrderDate");
@@ -68,6 +89,7 @@ const ImportOrder = () => {
 
       if (!orderNumber || !orderDate || !orderType || !customerName || !resellerName) {
         showError("Mancano dati essenziali nel file XML (Numero Ordine, Data, Tipo, Cliente, Rivenditore).");
+        console.error("Missing essential data:", { orderNumber, orderDate, orderType, customerName, resellerName });
         return null;
       }
 

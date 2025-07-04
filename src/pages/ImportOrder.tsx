@@ -34,11 +34,13 @@ const ImportOrder = () => {
 
   const parseXml = (xmlString: string): OrderData | null => {
     console.log("--- Starting XML Parsing ---");
-    console.log("Raw XML string (first 500 chars):", xmlString.substring(0, 500) + "...");
+    // Trim the XML string to remove any leading/trailing whitespace or invisible characters
+    const trimmedXmlString = xmlString.trim();
+    console.log("Trimmed XML string (first 500 chars):", trimmedXmlString.substring(0, 500) + "...");
 
     try {
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+      const xmlDoc = parser.parseFromString(trimmedXmlString, "text/xml");
 
       // Check for parsing errors
       const errorNode = xmlDoc.querySelector("parsererror");
@@ -51,6 +53,9 @@ const ImportOrder = () => {
 
       // Get the root element directly
       const rootElement = xmlDoc.documentElement;
+      console.log("Parsed XML document root element nodeName:", rootElement?.nodeName);
+      console.log("Parsed XML document root element outerHTML (first 500 chars):", rootElement?.outerHTML.substring(0, 500) + "...");
+
 
       // Check if the root element is indeed <Order>
       if (!rootElement || rootElement.nodeName !== "Order") {

@@ -27,13 +27,13 @@ const formSchema = z.object({
   order_number: z.string().min(1, "Il numero d'ordine è richiesto."),
   order_date: z.date({ required_error: "La data dell'ordine è richiesta." }),
   order_type: z.string().nullable().optional(),
-  customer_name: z.string().min(1, "Il nome del cliente è richiesto."),
+  customer_name: z.string().nullable().optional(), // Reso nullable e opzionale
   customer_number: z.string().nullable().optional(),
-  reseller_name: z.string().min(1, "Il nome del rivenditore è richiesto."),
+  reseller_name: z.string().min(1, "Il nome del rivenditore è richiesto."), // Rimane richiesto
   reseller_code: z.string().nullable().optional(),
   project_name: z.string().nullable().optional(),
   designer: z.string().nullable().optional(),
-  agent_id: z.string().nullable().optional(), // Nuovo campo per l'ID dell'agente
+  agent_id: z.string().nullable().optional(),
 });
 
 type OrderFormValues = z.infer<typeof formSchema>;
@@ -59,7 +59,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
       order_number: "",
       order_date: new Date(),
       order_type: null,
-      customer_name: "",
+      customer_name: null, // Default a null
       customer_number: null,
       reseller_name: "",
       reseller_code: null,
@@ -193,9 +193,9 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           name="customer_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome Cliente</FormLabel>
+              <FormLabel>Nome Cliente</FormLabel> {/* Etichetta per il campo cliente */}
               <FormControl>
-                <Input placeholder="Nome del cliente" {...field} disabled={!canEdit} />
+                <Input placeholder="Nome del cliente" {...field} value={field.value || ""} disabled={!canEdit} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -219,7 +219,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
           name="reseller_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome Rivenditore</FormLabel>
+              <FormLabel>Nome Rivenditore</FormLabel> {/* Etichetta per il campo rivenditore */}
               <FormControl>
                 <Input placeholder="Nome del rivenditore" {...field} disabled={!canEdit} />
               </FormControl>

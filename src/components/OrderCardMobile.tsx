@@ -10,7 +10,7 @@ interface Order {
   order_number: string;
   order_date: string;
   order_type: string | null;
-  customer_name: string;
+  customer_name: string | null; // Reso nullable
   customer_number: string | null;
   reseller_name: string;
   reseller_code: string | null;
@@ -64,7 +64,7 @@ const OrderCardMobile: React.FC<OrderCardMobileProps> = ({ order, onEdit, onDele
       </div>
       <div className="text-sm text-gray-600 space-y-1">
         <p><strong>Data Ordine:</strong> {format(new Date(order.order_date), "dd/MM/yyyy")}</p>
-        <p><strong>Cliente:</strong> {order.customer_name}</p>
+        <p><strong>Cliente:</strong> {order.customer_name || "N/D"}</p> {/* Gestisce il valore nullo */}
         <p><strong>Rivenditore:</strong> {order.reseller_name}</p>
         <p><strong>Agente:</strong> {order.agents?.name || "N/D"}</p>
       </div>

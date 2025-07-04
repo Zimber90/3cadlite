@@ -29,13 +29,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import OrderSearchFilters from "@/components/OrderSearchFilters"; // Creeremo questo componente
+import OrderCardMobile from "@/components/OrderCardMobile"; // Importa OrderCardMobile
 
 interface Order {
   id: string;
   order_number: string;
   order_date: string;
   order_type: string | null;
-  customer_name: string;
+  customer_name: string | null; // Reso nullable
   customer_number: string | null;
   reseller_name: string;
   reseller_code: string | null;
@@ -333,7 +334,7 @@ const Orders = () => {
                         <TableRow key={order.id}>
                           <TableCell className="font-medium px-2 sm:px-4">{order.order_number}</TableCell>
                           <TableCell className="px-2 sm:px-4">{format(new Date(order.order_date), "dd/MM/yyyy")}</TableCell>
-                          <TableCell className="px-2 sm:px-4">{order.customer_name}</TableCell>
+                          <TableCell className="px-2 sm:px-4">{order.customer_name || "N/D"}</TableCell> {/* Gestisce il valore nullo */}
                           <TableCell className="px-2 sm:px-4">{order.reseller_name}</TableCell>
                           <TableCell className="px-2 sm:px-4">{order.agents?.name || "N/D"}</TableCell>
                           {canEdit && (

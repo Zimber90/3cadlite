@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpIcon, Loader2 } from "lucide-react";
-import { showSuccess, showError } from "@/utils/toast"; // Corretto da '=>' a 'from'
+import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/SessionContext";
 
@@ -11,7 +11,7 @@ interface OrderData {
   order_number: string;
   order_date: string; // YYYY-MM-DD
   order_type: string;
-  customer_name: string;
+  customer_name: string | null; // Reso nullable
   customer_number: string | null;
   reseller_name: string;
   reseller_code: string | null;
@@ -83,22 +83,23 @@ const ImportOrder = () => {
         return element?.textContent || null;
       };
 
-      // Extracting data based on the new XML structure
+      // Extracting data based on the new XML structure and swapped logic
       const orderNumber = getElementText(header, "NUMERO");
       const orderDate = getElementText(header, "DATA");
       const orderType = getElementText(header, "TIPO"); // Assuming TIPO is OrderType
 
-      // Customer details
-      const customerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
+      // SWAPPED LOGIC:
+      // CLI_1 (e.g., "Gironi") goes to reseller_name
+      // RIF (e.g., "Dimensione Bagno s.r.l.") goes to customer_name (can be null)
+      const resellerName = getElementText(header.querySelector("VAR"), "CLI_1"); // CLI_1 is inside VAR, which is inside TESTA
+      const customerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
+
       const customerNumber = getElementText(header, "CLIENTE"); // CLIENTE is direct child of TESTA
 
-      // Reseller details
-      const resellerName = getElementText(header, "RIF"); // RIF is direct child of TESTA
-      const resellerCode = null; // Not found in the provided snippet, setting to null for now
-
-      // Project details
-      const projectName = null; // Not found in the provided snippet, setting to null for now
-      const designer = null; // Not found in the provided snippet, setting to null for now
+      // Not found in the provided snippet, setting to null for now
+      const resellerCode = null;
+      const projectName = null;
+      const designer = null;
 
       // Date format in XML is "DD/MM/YYYY", but DB expects "YYYY-MM-DD"
       let formattedOrderDate = null;
@@ -111,8 +112,9 @@ const ImportOrder = () => {
         }
       }
 
-      if (!orderNumber || !formattedOrderDate || !orderType || !customerName || !resellerName) {
-        showError("Mancano dati essenziali nel file XML (Numero Ordine, Data, Tipo, Cliente, Rivenditore).");
+      // Now, resellerName is required, customerName can be null
+      if (!orderNumber || !formattedOrderDate || !orderType || !resellerName) {
+        showError("Mancano dati essenziali nel file XML (Numero Ordine, Data, Tipo, Rivenditore).");
         console.error("Missing essential data:", { orderNumber, formattedOrderDate, orderType, customerName, resellerName });
         return null;
       }

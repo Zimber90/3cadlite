@@ -194,7 +194,7 @@ const Orders = () => {
                     <PlusCircle className="mr-2 h-4 w-4" /> Aggiungi Ordine
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto"> {/* Added max-h and overflow-y-auto */}
                   <DialogHeader>
                     <DialogTitle>{editingOrder ? "Modifica Ordine" : "Aggiungi Nuovo Ordine"}</DialogTitle>
                   </DialogHeader>

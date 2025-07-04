@@ -141,19 +141,15 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
+                      className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
                       disabled={!canEdit}
                     >
-                      {/* Ensure this is always a single root element */}
                       <span className="flex items-center justify-between w-full">
                         <span className="flex-1">
                           {field.value && !isNaN(field.value.getTime()) ? (
                             format(field.value, "PPP")
                           ) : (
-                            "Seleziona una data" // Changed to string literal
+                            "Seleziona una data"
                           )}
                         </span>
                         <CalendarIcon className="h-4 w-4 opacity-50" />

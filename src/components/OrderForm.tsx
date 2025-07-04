@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar"; // Corretto da '=>' a 'from'
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -147,7 +147,7 @@ export function OrderForm({ initialData, onSuccess, onCancel }: OrderFormProps) 
                       )}
                       disabled={!canEdit}
                     >
-                      {field.value ? (
+                      {field.value && !isNaN(field.value.getTime()) ? (
                         format(field.value, "PPP")
                       ) : (
                         <span>Seleziona una data</span>

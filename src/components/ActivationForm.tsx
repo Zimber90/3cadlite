@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
-import { showSuccess, showError } from "@/utils/toast"; // Corretto da '=>' a 'from'
+import { showSuccess, showError } from "@/utils/toast";
 import { useAuth } from "@/contexts/SessionContext";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -188,7 +188,7 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                       )}
                       disabled={!canEdit}
                     >
-                      {field.value ? (
+                      {field.value && !isNaN(field.value.getTime()) ? (
                         format(field.value, "PPP")
                       ) : (
                         <span>Seleziona una data</span>
@@ -227,7 +227,7 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                       )}
                       disabled={!canEdit}
                     >
-                      {field.value ? (
+                      {field.value && !isNaN(field.value.getTime()) ? (
                         format(field.value, "PPP")
                       ) : (
                         <span>Seleziona una data</span>
@@ -285,7 +285,7 @@ export function ActivationForm({ initialData, onSuccess, onCancel }: ActivationF
                         )}
                         disabled={!canEdit}
                       >
-                        {field.value ? (
+                        {field.value && !isNaN(field.value.getTime()) ? (
                           format(field.value, "PPP")
                         ) : (
                           <span>Seleziona una data</span>

@@ -13,6 +13,8 @@ interface Activation {
   activation_date: string | null;
   created_at: string;
   updated_at: string;
+  agent_id: string | null;
+  agents: { name: string } | null; // Per il join
 }
 
 interface ActivationCardMobileProps {
@@ -59,6 +61,7 @@ const ActivationCardMobile: React.FC<ActivationCardMobileProps> = ({ activation,
         <p><strong>Richiesta:</strong> {format(new Date(activation.request_date), "dd/MM/yyyy")}</p>
         <p><strong>Link Inviato:</strong> {activation.link_sent_date ? format(new Date(activation.link_sent_date), "dd/MM/yyyy") : "N/D"}</p>
         <p><strong>Attivazione:</strong> {activation.activation_date ? format(new Date(activation.activation_date), "dd/MM/yyyy") : "N/D"}</p>
+        <p><strong>Agente:</strong> {activation.agents?.name || "N/D"}</p> {/* Aggiunto il campo Agente */}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-const CACHE_NAME = '3cadlite-static-v5'; // Cambiato il nome della cache a v5
+const CACHE_NAME = '3cadlite-static-v6'; // Cambiato il nome della cache a v6
 const urlsToCache = [
   // '/' è gestito con Network First, quindi non lo mettiamo qui per il pre-caching
   '/manifest.json?v=3', // Assicurati che anche il manifest con il nuovo parametro sia in cache
@@ -6,11 +6,11 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing v5...');
+  console.log('[Service Worker] Installing v6...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[Service Worker] Caching app shell v5 (excluding index.html for network-first)');
+        console.log('[Service Worker] Caching app shell v6 (excluding index.html for network-first)');
         // Cache solo gli asset non-index.html inizialmente
         return cache.addAll(urlsToCache);
       })
@@ -75,7 +75,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating v5...');
+  console.log('[Service Worker] Activating v6...');
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {

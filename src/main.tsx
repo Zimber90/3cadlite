@@ -11,26 +11,44 @@ if ('serviceWorker' in navigator) {
       .then(registration => {
         console.log('Service Worker registered with scope:', registration.scope);
 
-        // Aggiungi un listener per gli aggiornamenti del Service Worker
+        // Funzione per mostrare il prompt di aggiornamento
+        const showUpdatePrompt = () => {
+          toast.info("È disponibile una nuova versione dell'app!", {
+            action: {
+              label: "Aggiorna",
+              onClick: () => window.location.reload(true), // Ricarica forzando la cache
+            },
+            duration: Infinity, // Mostra la notifica finché l'utente non agisce
+          });
+        };
+
+        // Controlla se c'è un Service Worker in attesa immediatamente dopo la registrazione
+        if (registration.waiting) {
+          console.log('Service Worker: Un nuovo worker è già in attesa.');
+          showUpdatePrompt();
+        }
+
+        // Ascolta gli aggiornamenti
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // Nuovo Service Worker installato e pronto per l'attivazione
-                // Notifica l'utente che è disponibile un aggiornamento
-                console.log('New Service Worker installed. Prompting user to refresh...');
-                toast.info("È disponibile una nuova versione dell'app!", {
-                  action: {
-                    label: "Aggiorna",
-                    onClick: () => window.location.reload(true), // Ricarica forzando la cache
-                  },
-                  duration: Infinity, // Mostra la notifica finché l'utente non agisce
-                });
+              if (newWorker.state === 'installed' && registration.waiting) {
+                // Il nuovo worker è installato e in attesa di attivazione
+                console.log('Service Worker: Nuovo worker installato e in attesa.');
+                showUpdatePrompt();
               }
             });
           }
         });
+
+        // Ascolta il cambio del controller (quando un nuovo SW prende il controllo)
+        // Questo è utile se l'utente naviga via e torna, o se il vecchio SW viene sostituito
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('Service Worker: Controller cambiato. Ricaricamento pagina per assicurare l\'ultima versione.');
+          // Non forziamo il ricaricamento qui, ci affidiamo all'azione dell'utente dal toast
+        });
+
       })
       .catch(error => {
         console.error('Service Worker registration failed:', error);

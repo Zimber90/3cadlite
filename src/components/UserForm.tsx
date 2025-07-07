@@ -14,8 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
-import { useAuth } from "@/contexts/SessionContext"; // Importa useAuth
-import React, { useState, useEffect } from "react"; // Importa useState e useEffect
+import { useAuth } from "@/contexts/SessionContext";
+import React, { useState, useEffect } from "react";
 
 const formSchema = z.object({
   id: z.string(), // User ID from auth.users
@@ -39,15 +39,14 @@ interface Agent {
 }
 
 export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
-  const { isAdmin, user: currentUser } = useAuth(); // Ottieni lo stato isAdmin e l'utente corrente
-  const [agents, setAgents] = useState<Agent[]>([]); // Stato per gli agenti
+  const { isAdmin, user: currentUser } = useAuth();
+  const [agents, setAgents] = useState<Agent[]>([]);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
 
-  // Carica gli agenti disponibili all'avvio del componente
   useEffect(() => {
     const fetchAgents = async () => {
       const { data, error } = await supabase
@@ -67,16 +66,13 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
   const onSubmit = async (values: UserFormValues) => {
     const { id, ...updateData } = values;
 
-    // Determina se l'utente corrente sta modificando il proprio profilo
     const isEditingOwnProfile = currentUser?.id === id;
 
-    // Se non è admin e non sta modificando il proprio profilo, non permettere modifiche
     if (!isAdmin && !isEditingOwnProfile) {
       showError("Non hai i permessi per modificare questo profilo utente.");
       return;
     }
 
-    // Se non è admin e sta modificando il proprio profilo, non permettere di cambiare ruolo o agente
     if (!isAdmin && isEditingOwnProfile) {
       if (updateData.role !== initialData.role || updateData.agent_id !== initialData.agent_id) {
         showError("Non hai i permessi per modificare il tuo ruolo o l'agente assegnato.");
@@ -86,7 +82,7 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
 
     const dataToSave = {
       ...updateData,
-      agent_id: updateData.agent_id === "none" ? null : updateData.agent_id, // Converti "none" in null
+      agent_id: updateData.agent_id === "none" ? null : updateData.agent_id,
     };
 
     const { error } = await supabase
@@ -137,7 +133,7 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Ruolo</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isAdmin}> {/* Disabilita se non è admin */}
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isAdmin}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleziona un ruolo" />
@@ -161,11 +157,13 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
               <Select
                 onValueChange={(value) => field.onChange(value === "none" ? null : value)}
                 defaultValue={field.value || "none"}
-                disabled={!isAdmin} // Solo gli admin possono assegnare agenti ai profili
+                disabled={!isAdmin}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleziona un agente" />
+                    <SelectValue placeholder="Seleziona un agente">
+                      {field.value ? agents.find(agent => agent.id === field.value)?.name : "Nessun Agente"}
+                    </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>

@@ -85,9 +85,6 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
       agent_id: updateData.agent_id === "none" ? null : updateData.agent_id,
     };
 
-    console.log("UserForm: Submitting with dataToSave:", dataToSave); 
-    console.log("UserForm: Target user ID:", id); 
-
     const { error } = await supabase
       .from("profiles")
       .update(dataToSave)
@@ -95,7 +92,6 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
 
     if (error) {
       showError(`Errore durante l'aggiornamento del profilo: ${error.message}`);
-      console.error("UserForm: Supabase update error:", error); 
     } else {
       showSuccess("Profilo utente aggiornato con successo!");
       onSuccess?.();
@@ -160,9 +156,7 @@ export function UserForm({ initialData, onSuccess, onCancel }: UserFormProps) {
               <FormLabel>Agente Assegnato (a questo utente)</FormLabel>
               <Select
                 onValueChange={(value) => {
-                  console.log("UserForm: Select onValueChange - raw value:", value); 
                   field.onChange(value === "none" ? null : value);
-                  console.log("UserForm: Select onValueChange - form field value after change:", form.getValues("agent_id")); 
                 }}
                 defaultValue={field.value || "none"}
                 disabled={!isAdmin}

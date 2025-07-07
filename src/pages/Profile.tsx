@@ -11,6 +11,7 @@ interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   role: 'admin' | 'viewer';
+  agent_id: string | null; // Aggiunto agent_id
 }
 
 const Profile = () => {
@@ -26,7 +27,7 @@ const Profile = () => {
     setLoadingProfile(true);
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, role')
+      .select('id, first_name, last_name, role, agent_id') // Seleziona anche agent_id
       .eq('id', user.id)
       .single();
 

@@ -22,7 +22,8 @@ interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   role: 'admin' | 'viewer';
-  agent_id: string | null; // Aggiunto agent_id
+  agent_id: string | null;
+  agents: { name: string } | null; // Aggiunto per il nome dell'agente
 }
 
 const Users = () => {
@@ -37,7 +38,7 @@ const Users = () => {
     setLoading(true);
     const { data: profilesData, error: profilesError } = await supabase
       .from("profiles")
-      .select("id, first_name, last_name, role, agent_id"); // Seleziona anche agent_id
+      .select("id, first_name, last_name, role, agent_id, agents(name)"); // Seleziona anche il nome dell'agente
 
     if (profilesError) {
       showError(`Errore nel caricamento dei profili: ${profilesError.message}`);
@@ -135,7 +136,7 @@ const Users = () => {
                   <TableCell className="font-medium px-2 sm:px-4">{user.first_name || "N/D"}</TableCell>
                   <TableCell className="px-2 sm:px-4">{user.last_name || "N/D"}</TableCell>
                   <TableCell className="px-2 sm:px-4">{user.role}</TableCell>
-                  <TableCell className="px-2 sm:px-4">{user.agent_id || "N/D"}</TableCell> {/* Mostra agent_id */}
+                  <TableCell className="px-2 sm:px-4">{user.agents?.name || "N/D"}</TableCell> {/* Mostra il nome dell'agente */}
                   <TableCell className="text-right flex justify-end space-x-2 px-2 sm:px-4">
                     <Button variant="outline" size="icon" onClick={() => handleEdit(user)}>
                       <PencilIcon className="h-4 w-4" />
